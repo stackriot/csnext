@@ -6,7 +6,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "link": "yarn link",
-    "build": "tsc -w"
+    "build": "cpx \"src/**/*.{html,png,jpg}\" dist --watch && tsc -w"
   },
   "keywords": [],
   "author": "Erik Vullings <erik.vullings@gmail.com> (http://www.tno.nl)",
@@ -17,6 +17,7 @@
     "leaflet": "^1.0.3"
   },
   "devDependencies": {
+    "cpx": "^1.5.0",
     "@types/leaflet": "^1.0.62",
     "typescript": "^2.3.4"
   }
