@@ -1,6 +1,6 @@
 # A leaflet plugin for the csnext framework
 
-This is a plugin for [Aurelia](http://aurelia.io/) providing a CustomElement `<csnext-csnext-leaflet></csnext-csnext-leaflet>` that displays a map.
+This is a plugin for [Aurelia](http://aurelia.io/) providing a CustomElement `<csnext-leaflet></csnext-leaflet>` that displays a map.
 
 It is a clone of [Benib's Aurelia Leaflet](https://github.com/benib/aurelia-leaflet) custom element, but converted to Typescript and updated.
 
