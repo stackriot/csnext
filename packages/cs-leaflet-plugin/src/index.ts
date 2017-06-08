@@ -2,6 +2,7 @@ import * as Leaflet from 'leaflet';
 import { FrameworkConfiguration } from "aurelia-framework/dist/aurelia-framework";
 
 // Export all classes that you are using (not sure about HTML files yet)
+export * from './lib/leaflet.html';
 export * from './lib/leaflet';
 export * from './lib/leaflet-exception';
 export * from './lib/leaflet-defaults';

@@ -5,9 +5,10 @@ import { LeafletException } from './leaflet-exception';
 import { defaultMapOptions, defaultLayers } from './leaflet-defaults';
 import LayerFactory from './layer-factory';
 import { IMapLayer, ILayerDescription } from "./definitions";
+import template from './leaflet.html';
 
 @customElement('csnext-leaflet')
-@inlineView(`<template><div ref="mapContainer"></div></template>`)
+@inlineView(template)
 @inject(EventAggregator, Element)
 export class LeafletCustomElement {
   @bindable layers;
