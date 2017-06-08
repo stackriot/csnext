@@ -1,4 +1,5 @@
 import { MapOptions, LatLng } from "leaflet";
+import { IMapLayer } from "./definitions";
 
 export const defaultMapOptions: MapOptions = {
   center: <LatLng> {
@@ -8,7 +9,7 @@ export const defaultMapOptions: MapOptions = {
   zoom: 13
 };
 
-export const defaultLayers = {
+export const defaultLayers: IMapLayer = {
   base: [
     {
       id: 'OSM Tiles',

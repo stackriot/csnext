@@ -4,21 +4,21 @@ import { EventAggregator } from 'aurelia-event-aggregator';
 import { LeafletException } from './leaflet-exception';
 import { defaultMapOptions, defaultLayers } from './leaflet-defaults';
 import LayerFactory from './layer-factory';
-import * as Leaflet from 'leaflet';
+import { IMapLayer, ILayerDescription } from "./definitions";
 
 @customElement('csnext-leaflet')
 @inlineView(`<template><div ref="mapContainer"></div></template>`)
-@inject(Leaflet, EventAggregator, Element)
+@inject(EventAggregator, Element)
 export class LeafletCustomElement {
   @bindable layers;
-  @bindable mapEvents: Leaflet.Event[];
+  @bindable mapEvents: L.Event[];
   @bindable mapOptions: MapOptions;
   @bindable withLayerControl;
   @bindable withScaleControl;
 
-  private map: Leaflet.Map;
+  private map: L.Map;
   private layerFactory: LayerFactory;
-  private mapInit;
+  private mapInit: Promise<object>;
   private mapInitResolve;
   private mapInitReject;
   private eventsBound;
@@ -33,9 +33,8 @@ export class LeafletCustomElement {
     overlay: {}
   };
 
-  constructor(private L, private eventAggregator: EventAggregator, private element: Element) {
-    this.layerFactory = new LayerFactory(this.L);
-
+  constructor(private eventAggregator: EventAggregator, private element: Element) {
+    this.layerFactory = new LayerFactory();
     this.mapInit = new Promise((resolve, reject) => {
       this.mapInitResolve = resolve;
       this.mapInitReject = reject;
@@ -51,7 +50,7 @@ export class LeafletCustomElement {
     this.attachLayers();
   }
 
-  layersChanged(newLayers, oldLayers) {
+  layersChanged(newLayers: IMapLayer, oldLayers: IMapLayer) {
     if (oldLayers && oldLayers !== null) {
       this.removeOldLayers(oldLayers.base, 'base');
       this.removeOldLayers(oldLayers.overlay, 'overlay');
@@ -82,11 +81,11 @@ export class LeafletCustomElement {
     this.mapInit.then(() => {
       if (newEvents && newEvents.length) {
         for (let eventName of newEvents) {
-          this.map.on(eventName, (e) => this.eventAggregator.publish('aurelia-leaflet', Object.assign(e, { map: this.map })));
+          this.map.on(eventName, e => this.eventAggregator.publish('aurelia-leaflet', Object.assign(e, { map: this.map })));
         }
       }
       if (oldEvents !== null) {
-        for (let removedEvent of oldEvents.filter((e) => newEvents.indexOf(e) === -1)) {
+        for (let removedEvent of oldEvents.filter(e => newEvents.indexOf(e) === -1)) {
           this.map.off(removedEvent);
         }
       }
@@ -108,7 +107,7 @@ export class LeafletCustomElement {
         if (this.layerControl) {
           this.map.removeControl(this.layerControl);
         }
-        this.layerControl = this.L.control.layers(this.attachedLayers.base, this.attachedLayers.overlay, newValue).addTo(this.map);
+        this.layerControl = L.control.layers(this.attachedLayers.base, this.attachedLayers.overlay, newValue).addTo(this.map);
       });
     }
   }
@@ -125,7 +124,7 @@ export class LeafletCustomElement {
         if (this.scaleControl) {
           this.map.removeControl(this.scaleControl);
         }
-        this.scaleControl = this.L.control.scale(newValue).addTo(this.map);
+        this.scaleControl = L.control.scale(newValue).addTo(this.map);
       });
     }
   }
@@ -134,10 +133,10 @@ export class LeafletCustomElement {
     return new Promise((resolve, reject) => {
       // remove the center option before contructing the map to have a chance to bind to the "load" event
       // first. The "load" event on the map gets fired after center and zoom are set for the first time.
-      var center = this.mapOptions.center;
+      const center = this.mapOptions.center;
       delete this.mapOptions.center;
       if (!this.map) {
-        this.map = new this.L.map(this.mapContainer, this.mapOptions);
+        this.map = L.map(this.mapContainer, this.mapOptions);
         this.map.on('load', () => {
           setTimeout(() => this.map.invalidateSize(), 400);
         });
@@ -188,7 +187,7 @@ export class LeafletCustomElement {
     });
   }
 
-  removeOldLayers(oldLayers, type) {
+  removeOldLayers(oldLayers: ILayerDescription[], type: string) {
     if (!oldLayers || !oldLayers.length) {
       return;
     }
